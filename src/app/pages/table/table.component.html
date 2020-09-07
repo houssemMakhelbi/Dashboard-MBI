@@ -1,0 +1,31 @@
+    <div class="row">
+      <div class="col-lg-12 hedding pb-2 text-black-50">
+        Liste des commandes       </div>
+      <div class="col-lg-12">
+        <table class="table table-bordered" style="border-collapse:collapse;">
+          <thead>
+          <tr>
+            <th>No.</th>
+            <th>Utilisateur</th>
+            <th>Adresse</th>
+          </tr>
+          </thead>
+          <tbody *ngFor="let order of orders">
+          <tr colspan="6" (click)="order.go=!order.go">
+            <td>{{order.id}}</td>
+            <td>{{order.user.firstname}} {{order.user.lastname}}</td>
+            <td>{{order.user.adress}}</td>
+          </tr>
+          <tr *ngFor="let prod of order.orderProducts" class="p">
+            <td colspan="6" [class]="!order.go ? 'hiddenRow' : ''">
+              <div [class]="!order.go ? 'accordian-body collapse p-3' :''" id="demo1">
+                <p>Produit : <span>{{prod.products.name}}</span></p>
+                <p>Quantité : <span>{{prod.quantity}}</span></p>
+                <p>totale : <span>{{prod.products.salePrice * prod.quantity}}</span></p>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>

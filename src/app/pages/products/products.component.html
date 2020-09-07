@@ -1,0 +1,277 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-md-4">
+            <h4 class="card-title"> Liste des produits</h4>
+          </div>
+          <div class="col-md-4">
+            <button type="button" class="btn btn-primary btn-block float-right" (click)="openXl(content)">Ajouter un
+              produit
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <select class="custom-select mr-sm-2" (change)="onChangeSelectCategories($event.target.value)">
+            <option selected>choose ...</option>
+            <option *ngFor="let cat of categories" [value]=cat.id>{{cat.name}}</option>
+          </select>
+          <br>
+
+          <table class="table">
+            <thead class=" text-primary">
+            <th>
+              Nom du produit
+            </th>
+            <th>
+              Description Totale
+            </th>
+            <th>
+              Details Totale
+            </th>
+            <th>
+              Details courte
+            </th>
+            <th>% promotion</th>
+            <th>Prix Avant promotion</th>
+            <th class="text-right">
+              Prix Aprés Promotion
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            <tr
+              *ngFor="let prods of ChoosenCategory.products | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
+              <td>
+                {{prods.name}}
+              </td>
+              <td>
+                {{prods.description}}
+              </td>
+              <td>
+                {{prods.details}}
+              </td>
+              <td>{{prods.shortDetails}}</td>
+              <td>{{prods.discount}}</td>
+              <td>{{prods.salePrice}}</td>
+              <td class="text-right">
+                {{prods.price}} TND
+              </td>
+              <td>
+                <div id="icons-wrapper">
+                  <section>
+                    <ul style="list-style: none;">
+                      <li>
+                        <a (click)="deleteProduct(prods.id,prods.name,contentdelete)">
+                          <i class="nc-icon nc-simple-remove"></i></a>
+                      </li>
+                    </ul>
+                    <ul style="list-style: none;">
+                      <li>
+                        <a (click)="updateProduct(prods,contentUpdate,ChoosenCategory.id)"> <i
+                          class="nc-icon nc-paper"></i></a>
+                      </li>
+                    </ul>
+                  </section>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <ngb-pagination
+            [(page)]="page"
+            [pageSize]="pageSize"
+            [collectionSize]="prodsChoosenLength"></ngb-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #contentUpdate let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Modifier un produit </h4>
+      <button type="button" class="close" aria-label="Close" (click)="closeupdateDialog()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="update()" class="form form-register">
+        <div class="row">
+          <div *ngFor="let pic of updateform.pictures" class="col">
+            <img [src]="pic.big" width="200px"><i class="nc-icon nc-simple-remove" (click)="deleteimage(pic.id)"></i>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="file-upload">
+              <input type="file" name="image" (change)="onFileChange($event)" accept="image/x-png,image/gif,image/jpeg" />
+            </div></div>
+          <div class="col">
+            <div class="file-upload">
+              <input type="file" name="image" (change)="onFileChange($event)" accept="image/x-png,image/gif,image/jpeg" />
+            </div></div>
+          <div class="col">
+            <div class="file-upload">
+              <input type="file" name="image"  (change)="onFileChange($event)" accept="image/x-png,image/gif,image/jpeg" />
+            </div></div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>Nom</label>
+            <input name="name" type="text" class="form-control" placeholder="{{updateform.name}}"
+                   [(ngModel)]="updateform.name" required>
+          </div>
+          <div class="col">
+            <label>Prix</label>
+            <input name="price" type="number" step="0.01" (change)="CalculatePromoPrice()" class="form-control"
+                   placeholder="Prix du produit"
+                   [(ngModel)]="updateform.salePrice"
+                   required>
+          </div>
+          <div class="col">
+            <label>Promotion</label>
+            <input name="promotion" type="number" step="0.1" (change)="CalculatePromoPrice()" class="form-control"
+                   placeholder="Prix du produit"
+                   [(ngModel)]="updateform.discount"
+                   required>
+          </div>
+          <div class="col">
+            <label>Prix aprés promotion</label>
+            <input name="pricediscount" type="number" step="0.01" (change)="CalculatePromo()" class="form-control"
+                   placeholder="Prix du produit"
+                   [(ngModel)]="updateform.price"
+                   required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" type="text" class="form-control" placeholder="Description de la produit" cols="3"
+                    rows="4" [(ngModel)]="updateform.description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Details</label>
+          <textarea name="details" type="text" class="form-control" placeholder="Fontionnalité de la produit" cols="3"
+                    rows="4" [(ngModel)]="updateform.details" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Details Courte</label>
+          <textarea name="details courte" type="text" class="form-control" placeholder="Fontionnalité de la produit"
+                    cols="3"
+                    rows="4" [(ngModel)]="updateform.shortDetails" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select class="custom-select mr-sm-2" required name="category"
+                  (change)="updateform.category.id=$event.target.value">
+            <option *ngFor="let cat of categories" [value]=cat.id
+                    [selected]="cat.id == updateform.category.id">{{cat.name}}</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Modifier</button>
+          <button type="button" class="btn btn-light" (click)="closeupdateDialog()">Fermer</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Ajouter un produit </h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form #myform="ngForm" (ngSubmit)="register(myform)" class="form form-register">
+        <div class="row">
+          <div class="col">
+            <label>Choose Image1</label>
+            <input type="file" name="avatar" (change)="onFileChange($event)" accept="image/*">
+          </div>
+          <div class="col">
+            <label>Choose Image1</label>
+            <input type="file" name="avatar" (change)="onFileChange($event)" accept="image/*">
+          </div>
+          <div class="col">
+            <label>Choose Image1</label>
+            <input type="file" name="avatar" (change)="onFileChange($event)" accept="image/*">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>Stock</label>
+            <input name="stock" type="number" class="form-control" placeholder="stock"
+                   ngModel required>
+          </div>
+          <div class="col">
+            <label>Nom</label>
+            <input name="name" type="text" class="form-control" placeholder="Nom du produit"
+                   ngModel required>
+          </div>
+          <div class="col">
+            <label>Prix</label>
+            <input name="price" type="number" step="0.01" class="form-control" placeholder="Prix du produit"
+                   ngModel required>
+          </div>
+          <div class="col">
+            <label>Promotion</label>
+            <input name="discount" type="number" step="0.1" class="form-control" placeholder="Prix du produit"
+                   ngModel required>
+          </div>
+          <div class="col">
+            <label>Prix aprés promotion</label>
+            <input name="salePrice" type="number" step="0.01" class="form-control" placeholder="Prix du produit"
+                   ngModel required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" type="text" class="form-control" placeholder="Description de la produit" cols="3"
+                    rows="4" ngModel required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Details</label>
+          <textarea name="details" type="text" class="form-control" placeholder="Fontionnalité de la produit" cols="3"
+                    rows="4" ngModel required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Details Courte</label>
+          <textarea name="shortDetails" type="text" class="form-control" placeholder="Fontionnalité de la produit"
+                    cols="3"
+                    rows="4" ngModel required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select class="custom-select mr-sm-2" required name="category"
+                  ngModel>
+            <option *ngFor="let cat of categories" [value]=cat.id>{{cat.name}}</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Ajouter</button>
+          <button type="button" class="btn btn-light" (click)="closeupdateDialog()">Fermer</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+  <ng-template #contentdelete let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Suppression de produit</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Voulez vous vraiment supprimer le produits {{deleteMessage}}</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Fermer</button>
+      <button type="button" class="btn btn-danger" (click)="delete()">Confirmer</button>
+    </div>
+  </ng-template>
+</div>

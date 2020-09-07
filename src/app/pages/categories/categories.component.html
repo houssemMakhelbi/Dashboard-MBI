@@ -1,0 +1,153 @@
+<div class="col-md-12">
+  <div class="card card-plain">
+    <div class="card-header">
+      <h4 class="card-title"> Liste des catégories</h4>
+      <!--
+            <p class="card-category"> Here is a subtitle for this table</p>
+      -->
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <button class="btn btn-primary" (click)="add(contentUpdate,1)">Ajouter une Catégorie</button>
+
+        <table class="table">
+          <thead class=" text-primary">
+          <th>
+            Name
+          </th>
+          <th></th>
+          </thead>
+          <tbody>
+          <tr *ngFor="let category of Parentcategories | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
+            <td>
+              {{category.name}}
+            </td>
+            <td>
+              <div>
+                <section>
+                  <ul style="list-style: none;">
+                    <li>
+                      <a (click)="deleteCategory(1,category.id,category.name,contentdelete)">
+                        <i class="nc-icon nc-simple-remove"></i></a>
+                    </li>
+                  </ul>
+                  <ul style="list-style: none;">
+                    <li>
+                      <a (click)="update(1,contentUpdate,category)"> <i class="nc-icon nc-paper"></i></a>
+                    </li>
+                  </ul>
+                </section>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <ngb-pagination
+        [(page)]="page"
+        [pageSize]="pageSize"
+        [collectionSize]="Parentcategories.length"></ngb-pagination>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <button class="btn btn-secondary" (click)="add(contentUpdate,2)">Ajouter une Sous catégorie</button>
+        <select class="custom-select mr-sm-2" (change)="onChangeSelectCategories($event.target.value)">
+          <option value="0" selected>choose ...</option>
+          <option *ngFor="let cat of Parentcategories" [value]=cat.id>{{cat.name}}</option>
+        </select>
+        <table class="table">
+          <thead class=" text-primary">
+          <th>
+            Name
+          </th>
+          <th>
+            Description
+          </th>
+          <th></th>
+          </thead>
+          <tbody>
+          <tr *ngFor="let category of categories | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
+            <td>
+              {{category.name}}
+            </td>
+            <td>
+              {{category.description}}
+            </td>
+            <td>
+              <div id="icons-wrapper">
+                <section>
+                  <ul style="list-style: none;">
+                    <li>
+                      <a (click)="deleteCategory(2,category.id,category.name,contentdelete)">
+                        <i class="nc-icon nc-simple-remove"></i></a>
+                    </li>
+                  </ul>
+                  <ul style="list-style: none;">
+                    <li>
+                      <a (click)="update(2,contentUpdate,category)"> <i class="nc-icon nc-paper"></i></a>
+                    </li>
+                  </ul>
+                </section>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <ngb-pagination
+        [(page)]="page"
+        [pageSize]="pageSize"
+        [collectionSize]="Parentcategories.length"></ngb-pagination>
+    </div>
+  </div>
+</div>
+<ng-template #contentUpdate let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Catégorie </h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="set()" class="form form-register">
+      <div class="form-group">
+        <label>Nom</label>
+        <input name="name" type="text" class="form-control" placeholder="Nom de la catégorie"
+               [(ngModel)]="updateform.name" required>
+      </div>
+      <div *ngIf="type == 2" class="form-group">
+        <label>Description</label>
+        <textarea  name="description" type="text" class="form-control" placeholder="Description de la catégorie" cols="3"
+                  rows="4" [(ngModel)]="updateform.description" required></textarea>
+      </div>
+      <div *ngIf="type == 2" class="form-group">
+        <select class="custom-select mr-sm-2" [(ngModel)]="updateform.parentCategory" name="parentCategory" >
+          <option value="0" selected>choose ...</option>
+          <option *ngFor="let cat of Parentcategories" [value]=cat.id>{{cat.name}}</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Fermer</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<ng-template #contentdelete let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Suppression de produit</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>Voulez vous vraiment supprimer la catégorie {{deletemessage}}</p>
+    <p class="bg-danger"> Tous les produits de la catégorie {{deletemessage}} seront supprimés</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Fermer</button>
+    <button type="button" class="btn btn-danger" (click)="delete()">Confirmer</button>
+  </div>
+</ng-template>
